@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      a {
+        text-decoration: none;
+        color: #333;
+      }
+      div {
+        width: 800px;
+        margin: 100px auto 0;
+      }
+      ul {
+        height: 40px;
+      }
+      ul li {
+        list-style: none;
+        float: left;
+        width: 200px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        background-color: #999;
+        border: 1px solid #ccc;
+      }
+      .current {
+        background-color: yellowgreen;
+      }
+
+      ol li {
+        display: none;
+      }
+      .current2 {
+        display: block;
+        border: 1px solid #999;
+        border-top: 0px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <ul>
+        <li class="current"><a href="javascript:;">1</a></li>
+        <li><a href="javascript:;">2</a></li>
+        <li><a href="javascript:;">3</a></li>
+        <li><a href="javascript:;">4</a></li>
+      </ul>
+      <ol>
+        <li class="current2">内容1</li>
+        <li>内容2</li>
+        <li>内容3</li>
+        <li>内容4</li>
+      </ol>
+    </div>
+    <script>
+      const oUllis = document.querySelectorAll('ul li')
+      const oOllis = document.querySelectorAll('ol li')
+      const odiv = document.querySelector('div')
+      let index = 0
+
+      for (let i = 0; i < oUllis.length; i++) {
+        oUllis[i].index = i
+        oUllis[i].onclick = function () {
+          index = this.index
+          for (let j = 0; j < oUllis.length; j++) {
+            oUllis[j].className = ''
+            oOllis[j].className = ''
+          }
+          oUllis[this.index].className = 'current'
+          oOllis[this.index].className = 'current2'
+        }
+      }
+      // 这里不能用 const 下面离开重新赋值的时候回报错
+      let timer = setInterval(function () {
+        if (index === 4) index = 0
+        oUllis[index].click()
+        index++
+      }, 1000)
+
+      odiv.onmouseover = function () {
+        clearInterval(timer)
+      }
+
+      odiv.onmouseleave = function () {
+        timer = setInterval(function () {
+          if (index === 4) index = 0
+          oUllis[index].click()
+          index++
+        }, 1000)
+      }
+    </script>
+  </body>
+</html>
