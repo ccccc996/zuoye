@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .good {
+        border: 1px solid #999;
+        padding: 10px;
+        margin: 10px;
+        display: flex;
+      }
+      .goodImg img {
+        width: 240px;
+        height: 240px;
+        background-color: yellowgreen;
+      }
+      .details {
+        padding: 10px 20px;
+      }
+      .details .price {
+        color: #f00;
+        font-size: 20px;
+      }
+      .details .price span {
+        text-decoration: line-through;
+        font-size: 16px;
+        color: #000;
+      }
+      .details button {
+        display: block;
+        color: #fff;
+        background: #f00;
+        width: 80px;
+        height: 40px;
+        text-align: center;
+      }
+      .number {
+        margin: 10px 0;
+      }
+      .num {
+        width: 120px;
+        height: 30px;
+        font-size: 24px;
+      }
+    </style>
+
+<body>
+    <div id="app">
+        <good-items v-for="item in list" :key="item.id" :item="item"></good-items>
+    </div>
+
+    <template id="goodItems">
+        <div class="good">
+            <div class="goodImg">
+                <img :src="item.img_url" alt="">
+            </div>
+            <div class="details">
+                <h3>{{item.title}}</h3>
+                <p>上架时间：{{item.add_time | dateFormat}}</p>
+                <span>库存数量：{{item.stock_quantity}}</span>
+                <p class="price">￥{{item.sell_price}}<span>￥{{item.market_price}}</span></p>
+                <div class="number"><label for="num">购买数量</label><input type="text" id="num" v-model="num" /></div>
+                <button @click="shop(item.id)">立即购买</button>
+            </div>
+        </div>
+    </template>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.4.3/dist/vue-router.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuex@3.5.1/dist/vuex.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script>
+        const goodItems = {
+            props: ['item'],
+            data(){
+                return {
+                    num: ''
+                }
+            },
+            methods: {
+                shop(id) {
+                    location.href = `/buy?id=${id}&num=${this.num}`
+                }
+            },
+            template: '#goodItems'
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            name: 'App',  
+            // 本部数据
+            data: {
+                list:[]
+            },
+            created(){
+                this.getlist()
+            },
+            // 方法
+            methods: {
+                async getlist(){
+                    const {data:res} = await axios.get('http://www.liulongbin.top:3005/api/getgoods?pageindex=0')
+                    if(res.status !== 0) return alert('获取商品列表失败')
+                    this.list =  res.message
+                    console.log(this.list);
+                }
+            },
+            components: {
+                goodItems
+            }
+        });
+
+        Vue.filter('dateFormat', function(originVal) {
+            const dt = new Date(originVal)
+            const y = dt.getFullYear()
+            const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+            const d = (dt.getDate() + '').padStart(2, '0')
+
+            const hh = (dt.getHours() + '').padStart(2, '0')
+            const mm = (dt.getMinutes() + '').padStart(2, '0')
+            const ss = (dt.getSeconds() + '').padStart(2, '0')
+
+            return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
+        })
+    </script>
+</body>
+
+</html>
